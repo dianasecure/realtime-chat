@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="style_all.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+    <div class="index">
+    <h1>Welcome to realtime-chat!</h1>
+    <h2>Enter Your Username</h2>
+    <input type="text" id="username" placeholder="Enter username">
+    <button onclick="submitUsername()">Continue</button>
+    </div>
+
+    <script>
+        function submitUsername() {
+            const username = document.getElementById("username").value.trim();
+            if (username) {
+                localStorage.setItem("username", username); // Save username
+                window.location.href = "select-chat.html"; // Go to chat selection page
+            } else {
+                alert("Please enter a username.");
+            }
+        }
+    </script>
+</body>
+</html>

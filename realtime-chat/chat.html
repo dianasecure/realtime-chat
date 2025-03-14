@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style_all.css">
+    <title>Chat</title>
+</head>
+<body>
+    <h2>Chatting with <span id="chatting-with"></span></h2>
+    <div id="chat-box"></div>
+
+    <input type="text" id="message" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:3000");
+        const username = localStorage.getItem("username");
+        const chatWith = JSON.parse(localStorage.getItem("chatWith"));
+
+        document.getElementById("chatting-with").textContent = chatWith.join(", ");
+
+        const sessionId = [username, ...chatWith].sort().join("_"); // Unique chat session key
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ type: "register", username, sessionId }));
+        };
+
+        ws.onmessage = (event) => {
+            const chatBox = document.getElementById("chat-box");
+            const msg = document.createElement("p");
+            msg.textContent = event.data;
+            chatBox.appendChild(msg);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        function sendMessage() {
+            const input = document.getElementById("message");
+            if (input.value.trim() !== "") {
+                ws.send(JSON.stringify({ type: "message", sessionId, sender: username, text: input.value }));
+                input.value = "";
+            }
+        }
+
+        // Send message on "Enter" key press
+        document.getElementById("message").addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

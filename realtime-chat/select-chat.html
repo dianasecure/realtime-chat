@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style_all.css">
+    <title>Select Chat</title>
+</head>
+<body>
+    <h2>Enter the usernames you want to chat with (comma-separated)</h2>
+    <input type="text" id="chat-users" placeholder="e.g., Alice, Bob">
+    <button onclick="startChat()">Start Chat</button>
+
+    <script>
+
+        async function loadUsers() {
+            const response = await fetch("http://localhost:3000/users");
+            const users = await response.json();
+
+            const userListDiv = document.getElementById("user-list");
+            userListDiv.innerHTML = ""; // Clear previous list
+
+            users.forEach(user => {
+                if (user !== localStorage.getItem("username")) { // Don't show yourself
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = user;
+                    checkbox.id = user;
+
+                    const label = document.createElement("label");
+                    label.htmlFor = user;
+                    label.textContent = user;
+
+                    userListDiv.appendChild(checkbox);
+                    userListDiv.appendChild(label);
+                    userListDiv.appendChild(document.createElement("br"));
+                }
+            });
+        }
+
+        function startChat() {
+            const input = document.getElementById("chat-users").value.trim();
+            
+            if (!input) {
+                alert("Please enter at least one username.");
+                return;
+            }
+
+            const selectedUsers = input.split(",").map(user => user.trim()).filter(user => user !== "");
+
+            if (selectedUsers.length === 0) {
+                alert("Please enter valid usernames.");
+                return;
+            }
+
+            localStorage.setItem("chatWith", JSON.stringify(selectedUsers)); // Store selected users
+            window.location.href = "chat.html"; // Move to chat page
+        }
+
+        loadUsers(); // Load users when the page loads
+    </script>
+</body>
+</html>
